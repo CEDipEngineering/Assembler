@@ -20,7 +20,7 @@ class Assembler:
         print(__out__)
         return __out__
 
-    def img2lcd(self, path):
+    def img2lcd(self, path, filename = "draw_img.nasm", header = ""):
         img = cv2.imread(path, 0)
         ret, img = cv2.threshold(img.copy(),127,255,cv2.THRESH_BINARY)
         img = cv2.bitwise_not(img.copy())
@@ -32,9 +32,11 @@ class Assembler:
         arr = arr.reshape((4800,16))
         res = [[int("".join(str(x) for x in arr_el), 2)] for arr_el in arr]
         print(res)
-        with open("draw_img.nasm", "w") as file:
-            file.write("")
-        with open("draw_img.nasm", "a") as file:
+        if not filename.endswith(".nasm"):
+            filename += ".nasm"
+        with open(filename, "w") as file:
+            file.write(header)
+        with open(filename, "a") as file:
             temp_lcd = self.lcd
             for word in res:
                 if word[0] != 0:
@@ -42,6 +44,15 @@ class Assembler:
                 temp_lcd += 1
             
 
+header = """; Arquivo: LCDQuadrado.nasm
+; Curso: Elementos de Sistemas
+; Criado por: Rafael Corsi
+; Data: 28/3/2018
+;
+; Desenhe um quadro no LCD
+
+"""
+
 
 nasm = Assembler()
-nasm.img2lcd("test.jpeg")
+nasm.img2lcd("quadrado.jpeg", "LCDquadrado", header=header)
